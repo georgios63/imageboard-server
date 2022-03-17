@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const Users = require("../models").user;
+const bcrypt = require("bcrypt");
 
 const router = new Router();
 
@@ -21,7 +22,11 @@ router.post("/", async (req, res, next) => {
     if (!email || email === " " || !password || !fullName)
       return res.status(400).send("Authentication problem");
 
-    const user = await Users.create(req.body);
+    const user = await Users.create({
+      email,
+      fullName,
+      password: bcrypt.hashSync(password, 10),
+    });
 
     res.send(user);
   } catch (e) {
